@@ -1,8 +1,8 @@
 import 'dart:convert';
-
+import 'package:chatgpt_integration/secretkey.dart';
 import 'package:http/http.dart' as http;
 
-String apiKey = "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";
+String apiKey = secretApiKey;
 
 class ApiServices{
     static String baseUrl = "https://api.openai.com/v1/completions";
