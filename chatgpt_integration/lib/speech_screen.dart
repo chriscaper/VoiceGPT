@@ -1,4 +1,5 @@
 import 'package:avatar_glow/avatar_glow.dart';
+import 'package:chatgpt_integration/chat.dart';
 import 'package:chatgpt_integration/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:speech_to_text/speech_to_text.dart';
@@ -29,15 +30,28 @@ class _SpeechScreenState extends State<SpeechScreen>{
         showTwoGlows: true,
         glowColor: Colors.black38,
         child:  GestureDetector(
-          onTapDown: (details) {
-            setState(() {
-              isListening = true;
-            });
+          onTapDown: (details) async{
+            if(!isListening){
+              var available = await speechToText.initialize();
+              if(available){
+                setState(() {
+                  isListening = true;
+                  speechToText.listen(
+                    onResult: (result){
+                      setState(() {
+                        text = result.recognizedWords;
+                      });
+                    }
+                  );
+                });
+              }
+            }
           },
           onTapUp: (details) {
             setState(() {
               isListening = false;
             });
+            speechToText.stop();
           }, 
           child: CircleAvatar(backgroundColor: Colors.black, radius: 35,
           child: Icon(Icons.mic, color:Colors.white ,),),
@@ -55,13 +69,61 @@ class _SpeechScreenState extends State<SpeechScreen>{
         ),
 
       ),
-      body: Container(
-        alignment: Alignment.center,
-        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-        margin: const EdgeInsets.only(bottom: 150),
-        child: Text(text, style: const TextStyle(fontSize: 18, color: Colors.black87, fontWeight: FontWeight.w600),),
+      body:  Container(
+          
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+          
+          child: Column(
+            children: [
+              Text(text, style:  TextStyle(fontSize: 18, color: isListening ? Colors.black87 : Colors.black54, fontWeight: FontWeight.w600),),
+              Expanded(
+                
+                child: ListView.builder(
+                  shrinkWrap: true,
+                  itemCount: 4,
+                  itemBuilder: (BuildContext context, int index){
+                return chat(
+                  chattext: "Hey, How are you doinhg?",
+                  type: ChatMessageType.user
+                );
+              }),
+              
+              )
+            ],
+          ),
+      
+        ),
+    );
+   }
 
-      ),
+   Widget chat({required chattext, required ChatMessageType type} ){
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      
+      children: [
+        CircleAvatar(
+          backgroundColor: bgColor,
+          child: Icon(Icons.person, color: Colors.black,),
+        ),
+        const SizedBox(width: 12,),
+        Expanded
+        (
+          child: Container(
+            padding: EdgeInsets.all(12),
+            margin: EdgeInsets.only(bottom: 8),
+            decoration: BoxDecoration(
+              color: Colors.grey,
+              borderRadius: BorderRadius.only(topRight: Radius.circular(12), bottomRight: Radius.circular(12), bottomLeft: Radius.circular(12)),
+              
+        
+            ),
+            child: Text(
+              "$chattext", 
+              style: TextStyle(color: Colors.black),
+            ),
+          ),
+        ),
+      ],
     );
    }
 }
