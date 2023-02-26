@@ -1,4 +1,5 @@
 import 'package:avatar_glow/avatar_glow.dart';
+import 'package:chatgpt_integration/apiservices.dart';
 import 'package:chatgpt_integration/chat.dart';
 import 'package:chatgpt_integration/colors.dart';
 import 'package:flutter/material.dart';
@@ -14,6 +15,14 @@ class SpeechScreen extends StatefulWidget{
 class _SpeechScreenState extends State<SpeechScreen>{
 
   SpeechToText  speechToText = SpeechToText();
+
+  final List<ChatM> messages = [];
+  var scrollController = ScrollController();
+
+  scrollMethod(){
+    scrollController.animateTo(scrollController.position.maxScrollExtent, 
+    duration: Duration(milliseconds: 300), curve: Curves.easeOut);
+  }
 
   var text = "Please Hold the Button and Start Speaking.";
   bool isListening = false;
@@ -47,11 +56,17 @@ class _SpeechScreenState extends State<SpeechScreen>{
               }
             }
           },
-          onTapUp: (details) {
+          onTapUp: (details) async{
             setState(() {
               isListening = false;
             });
             speechToText.stop();
+            messages.add(ChatM(text: text, typea: ChatMessageType.user));
+            var msg = await ApiServices.sendMessage(text);
+
+            setState(() {
+              messages.add(ChatM(text: msg, typea: ChatMessageType.bot));
+            });
           }, 
           child: CircleAvatar(backgroundColor: Colors.black, radius: 35,
           child: Icon(Icons.mic, color:Colors.white ,),),
@@ -79,13 +94,13 @@ class _SpeechScreenState extends State<SpeechScreen>{
               Expanded(
                 
                 child: ListView.builder(
+                  physics: const BouncingScrollPhysics(),
+                  controller: scrollController,
                   shrinkWrap: true,
-                  itemCount: 4,
+                  itemCount: messages.length,
                   itemBuilder: (BuildContext context, int index){
-                return chat(
-                  chattext: "Hey, How are you doinhg?",
-                  type: ChatMessageType.user
-                );
+                    var ch = messages[index];
+                  return chat(chattext: ch.text, type: ch.typea);
               }),
               
               )
@@ -96,7 +111,7 @@ class _SpeechScreenState extends State<SpeechScreen>{
     );
    }
 
-   Widget chat({required chattext, required ChatMessageType type} ){
+   Widget chat({required chattext, required ChatMessageType? type} ){
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       

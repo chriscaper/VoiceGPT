@@ -2,7 +2,7 @@ enum ChatMessageType{user, bot}
 
 class ChatM{
 
-  ChatM({required this.text, required this.type});
+  ChatM({required this.text, required this.typea});
   String? text;
-  ChatMessageType? type;
+  ChatMessageType? typea;
 }
