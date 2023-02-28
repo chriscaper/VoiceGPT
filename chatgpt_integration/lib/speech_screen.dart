@@ -29,7 +29,7 @@ class _SpeechScreenState extends State<SpeechScreen>{
   @override
   Widget build(BuildContext context){
     return Scaffold(
-      floatingActionButtonLocation: FloatingActionButtonLocation.miniCenterFloat,
+      floatingActionButtonLocation: FloatingActionButtonLocation.miniCenterDocked,
       floatingActionButton:  AvatarGlow(
         endRadius: 75.0,
         animate: isListening,
@@ -90,7 +90,8 @@ class _SpeechScreenState extends State<SpeechScreen>{
           
           child: Column(
             children: [
-              Text(text, style:  TextStyle(fontSize: 18, color: isListening ? Colors.black87 : Colors.black54, fontWeight: FontWeight.w600),),
+              Text("Please Hold the Mic Button and Start Speaking", style:  TextStyle(fontSize: 18, color: isListening ? Colors.black87 : Colors.black54, fontWeight: FontWeight.w600),),
+              const SizedBox(height: 50,),
               Expanded(
                 
                 child: ListView.builder(
@@ -99,7 +100,7 @@ class _SpeechScreenState extends State<SpeechScreen>{
                   shrinkWrap: true,
                   itemCount: messages.length,
                   itemBuilder: (BuildContext context, int index){
-                    var ch = messages[index];
+                  var ch = messages[index];
                   return chat(chattext: ch.text, type: ch.typea);
               }),
               
@@ -118,16 +119,16 @@ class _SpeechScreenState extends State<SpeechScreen>{
       children: [
         CircleAvatar(
           backgroundColor: bgColor,
-          child: Icon(Icons.person, color: Colors.black,),
+          child: type == ChatMessageType.bot? Image.asset('assets/chatgpt.png') : Icon(Icons.person, color: Colors.black,),
         ),
         const SizedBox(width: 12,),
         Expanded
         (
           child: Container(
             padding: EdgeInsets.all(12),
-            margin: EdgeInsets.only(bottom: 8),
+            margin: EdgeInsets.only(bottom: 10),
             decoration: BoxDecoration(
-              color: Colors.grey,
+              color: type == ChatMessageType.bot? Colors.black12: Colors.grey,
               borderRadius: BorderRadius.only(topRight: Radius.circular(12), bottomRight: Radius.circular(12), bottomLeft: Radius.circular(12)),
               
         
