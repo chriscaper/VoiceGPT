@@ -97,6 +97,8 @@ class _SpeechScreenState extends State<SpeechScreen>{
 
       ),
       body:  Container(
+        
+        height: 650,
           
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
           
@@ -107,7 +109,7 @@ class _SpeechScreenState extends State<SpeechScreen>{
               Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                Text("Recognized Texts: ", style:  TextStyle(fontSize: 13, color:  Colors.black, fontWeight: FontWeight.w800),),
+                Text("Recognized Speech: ", style:  TextStyle(fontSize: 13, color:  Colors.black, fontWeight: FontWeight.w800),),
                 Text(text, style:  TextStyle(fontSize: 13, color:  Colors.black, fontWeight: FontWeight.w800),),
               
               ],),

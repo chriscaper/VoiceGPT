@@ -17,13 +17,12 @@ class ApiServices{
     var res = await http.post(Uri.parse(baseUrl),
     headers: header,
     body: jsonEncode({
-      "model" : "text-curie-001",
+      "model" : "text-davinci-003",
       "prompt" : '$message',
-      "temperature" : 0.6,
+      "temperature" : 0.5,
       "max_tokens" : 100,
       "top_p" : 1,
-      "n" : 2,
-      "frequency_penalty" : 0.0,
+      "frequency_penalty" : 0.5,
       "presence_penalty" : 0.0,
       "stop" : [" Human:", " AI:"],
 
@@ -32,6 +31,8 @@ class ApiServices{
     if(res.statusCode == 200){
       var data = jsonDecode(res.body.toString());
       var msg = data['choices'][0]['text'];
+      print(data);
+      print(msg);
       return msg;
     }else{
       print("Failed Request");
