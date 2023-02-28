@@ -2,7 +2,9 @@ import 'package:avatar_glow/avatar_glow.dart';
 import 'package:chatgpt_integration/apiservices.dart';
 import 'package:chatgpt_integration/chat.dart';
 import 'package:chatgpt_integration/colors.dart';
+import 'package:chatgpt_integration/texttospeech.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_tts/flutter_tts.dart';
 import 'package:speech_to_text/speech_to_text.dart';
 
 class SpeechScreen extends StatefulWidget{
@@ -24,7 +26,7 @@ class _SpeechScreenState extends State<SpeechScreen>{
     duration: Duration(milliseconds: 300), curve: Curves.easeOut);
   }
 
-  var text = "Please Hold the Button and Start Speaking.";
+  var text = "";
   bool isListening = false;
   @override
   Widget build(BuildContext context){
@@ -60,13 +62,23 @@ class _SpeechScreenState extends State<SpeechScreen>{
             setState(() {
               isListening = false;
             });
-            speechToText.stop();
-            messages.add(ChatM(text: text, typea: ChatMessageType.user));
-            var msg = await ApiServices.sendMessage(text);
+            await speechToText.stop();
+            if(text.isNotEmpty && text != "Hold the button and Start Speaking"){
+              messages.add(ChatM(text: text, typea: ChatMessageType.user));
+              var msg = await ApiServices.sendMessage(text);
+              msg = msg.trim();
 
-            setState(() {
-              messages.add(ChatM(text: msg, typea: ChatMessageType.bot));
-            });
+              setState(() {
+                messages.add(ChatM(text: msg, typea: ChatMessageType.bot));
+              });
+
+              Future.delayed(Duration(milliseconds: 500), (){
+                TextToSpeech.speak(msg);
+              });
+            }else{
+              ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Failed to Process. Try Again!")));
+            }
+            
           }, 
           child: CircleAvatar(backgroundColor: Colors.black, radius: 35,
           child: Icon(Icons.mic, color:Colors.white ,),),
@@ -91,6 +103,14 @@ class _SpeechScreenState extends State<SpeechScreen>{
           child: Column(
             children: [
               Text("Please Hold the Mic Button and Start Speaking", style:  TextStyle(fontSize: 18, color: isListening ? Colors.black87 : Colors.black54, fontWeight: FontWeight.w600),),
+              const SizedBox(height: 10,),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                Text("Recognized Texts: ", style:  TextStyle(fontSize: 13, color:  Colors.black, fontWeight: FontWeight.w800),),
+                Text(text, style:  TextStyle(fontSize: 13, color:  Colors.black, fontWeight: FontWeight.w800),),
+              
+              ],),
               const SizedBox(height: 50,),
               Expanded(
                 
